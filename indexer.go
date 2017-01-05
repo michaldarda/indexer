@@ -7,6 +7,16 @@ type WordOccurrence struct {
 	wordNumber     int
 }
 
+var noOccurrence = WordOccurrence{documentNumber: -1, wordNumber: -1}
+
+func (w WordOccurrence) String() string {
+	if w == noOccurrence {
+		return ""
+	}
+
+	return fmt.Sprintf("%d:%d", w.documentNumber, w.wordNumber)
+}
+
 func (w1 WordOccurrence) Compare(w2 WordOccurrence) int {
 	if w1.documentNumber > w2.documentNumber {
 		return 1
@@ -29,10 +39,13 @@ func (index InvertedIndex) Add(word string, documentNumber int, wordNumber int) 
 	index[word] = []WordOccurrence{WordOccurrence{documentNumber: documentNumber, wordNumber: wordNumber}}
 }
 
-func (index InvertedIndex) SearchForward(word string, startingPoint WordOccurrence) *WordOccurrence {
+func (index InvertedIndex) SearchForward(word string, startingPoint WordOccurrence) WordOccurrence {
 	occurrences := index[word]
 	if occurrences == nil {
-		return nil
+		return noOccurrence
+	}
+	if startingPoint == noOccurrence {
+		return occurrences[0]
 	}
 
 	_, last := BinarySearch(occurrences, startingPoint, func(w1 WordOccurrence, w2 WordOccurrence) bool {
@@ -40,16 +53,19 @@ func (index InvertedIndex) SearchForward(word string, startingPoint WordOccurren
 	})
 
 	if last+1 == len(occurrences) {
-		return nil
+		return noOccurrence
 	}
 
-	return &occurrences[last+1]
+	return occurrences[last+1]
 }
 
-func (index InvertedIndex) SearchBackward(word string, startingPoint WordOccurrence) *WordOccurrence {
+func (index InvertedIndex) SearchBackward(word string, startingPoint WordOccurrence) WordOccurrence {
 	occurrences := index[word]
 	if occurrences == nil {
-		return nil
+		return noOccurrence
+	}
+	if startingPoint == noOccurrence {
+		return occurrences[0]
 	}
 
 	first, _ := BinarySearch(occurrences, startingPoint, func(w1 WordOccurrence, w2 WordOccurrence) bool {
@@ -57,10 +73,10 @@ func (index InvertedIndex) SearchBackward(word string, startingPoint WordOccurre
 	})
 
 	if first-1 < 0 {
-		return nil
+		return noOccurrence
 	}
 
-	return &occurrences[first-1]
+	return occurrences[first-1]
 }
 
 func BinarySearch(
@@ -86,8 +102,8 @@ func (index InvertedIndex) PrettyPrint() {
 	for word, occurrences := range index {
 		fmt.Print(word)
 		fmt.Print(" {")
-		for _, occurence := range occurrences {
-			fmt.Printf("(%d, %d),", occurence.documentNumber, occurence.wordNumber)
+		for _, occurrence := range occurrences {
+			fmt.Printf("(%d, %d),", occurrence.documentNumber, occurrence.wordNumber)
 		}
 		fmt.Print("}")
 		fmt.Println("")
