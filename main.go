@@ -10,20 +10,20 @@ import (
 
 func readFilesAndBuildIndex(fileNames []string) InvertedIndex {
 	index := InvertedIndex{}
-	for fileNumber, fileName := range fileNames {
+	for documentNumber, fileName := range fileNames {
 		file, err := os.Open(fileName)
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer file.Close()
 
-		b, err := ioutil.ReadAll(file)
+		fileContent, err := ioutil.ReadAll(file)
 		if err != nil {
 			log.Fatal(err)
 		}
-		tokenizedFileContents := strings.Fields(strings.ToLower(string(b)))
-		for wordNumber, word := range tokenizedFileContents {
-			index.Add(word, fileNumber, wordNumber)
+		words := strings.Fields(strings.ToLower(string(fileContent)))
+		for wordNumber, word := range words {
+			index.Add(word, documentNumber, wordNumber)
 		}
 	}
 	return index
@@ -36,6 +36,6 @@ func main() {
 		os.Exit(2)
 	}
 
-	index := readFilesAndBuildIndex(os.Args[1:len(os.Args)])
+	index := readFilesAndBuildIndex(os.Args[1:argsCount])
 	index.PrettyPrint()
 }
