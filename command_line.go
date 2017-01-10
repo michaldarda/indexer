@@ -33,13 +33,17 @@ func startCommandLine(index InvertedIndex, in io.Reader, out io.Writer) {
 		if command == ">" {
 			result := index.SearchForward(currentWord, currentOccurrence)
 			fmt.Fprintln(out, currentWord, result)
-			currentOccurrence = result
+			if result != (WordOccurrence{documentNumber: -1, wordNumber: -1}) {
+				currentOccurrence = result
+			}
 		} else if command == "<" {
 			result := index.SearchBackward(currentWord, currentOccurrence)
 			fmt.Fprintln(out, currentWord, result)
-			currentOccurrence = result
+			if result != (WordOccurrence{documentNumber: -1, wordNumber: -1}) {
+				currentOccurrence = result
+			}
 		} else {
-			currentWord = tokenizedCommand[0]
+			currentWord = strings.ToLower(tokenizedCommand[0])
 			if len(tokenizedCommand) == 3 {
 				documentNumber, err := strconv.Atoi(tokenizedCommand[1])
 				wordNumber, err := strconv.Atoi(tokenizedCommand[2])
@@ -50,8 +54,11 @@ func startCommandLine(index InvertedIndex, in io.Reader, out io.Writer) {
 			} else {
 				currentOccurrence = WordOccurrence{documentNumber: -1, wordNumber: -1}
 			}
-			currentOccurrence = index.SearchForward(currentWord, currentOccurrence)
-			fmt.Fprintln(out, currentWord, currentOccurrence)
+			result := index.SearchForward(currentWord, currentOccurrence)
+			fmt.Fprintln(out, currentWord, result)
+			if result != (WordOccurrence{documentNumber: -1, wordNumber: -1}) {
+				currentOccurrence = result
+			}
 		}
 	}
 }
