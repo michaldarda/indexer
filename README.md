@@ -19,10 +19,7 @@ Ideas:
 
 Todo:
 
-1. Implement missing commands, word x:xxx etc.
-2. Reading command file.
-3. Saving output to a file.
-4. Benchmarks (searching time, index building time), acceptance tests, regression tests comparing the legacy version and a new one.
+1. Benchmarks (searching time, index building time), acceptance tests, regression tests comparing the legacy version and a new one.
 
 Links:
 https://nullwords.wordpress.com/2013/04/18/inverted-indexes-inside-how-search-engines-work/
