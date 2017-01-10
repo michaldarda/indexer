@@ -41,22 +41,25 @@ func main() {
 
 	var in io.Reader
 	var out io.Writer
-	var err error
 
 	if *commandFileName != "" {
-		in, err = os.Open(*commandFileName)
+		f, err := os.Open(*commandFileName)
 		if err != nil {
-			fmt.Println(err)
+			log.Fatal(err)
 		}
+		defer f.Close()
+		in = f
 	} else {
 		in = os.Stdin
 	}
 
 	if *outputFileName != "" {
-		out, err = os.OpenFile(*outputFileName, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
+		f, err := os.OpenFile(*outputFileName, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
 		if err != nil {
-			fmt.Println(err)
+			log.Fatal(err)
 		}
+		defer f.Close()
+		in = f
 	} else {
 		out = os.Stdout
 	}
