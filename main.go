@@ -12,7 +12,8 @@ import (
 
 func readFilesAndBuildIndex(fileNames []string) InvertedIndex {
 	index := InvertedIndex{}
-	for documentNumber, fileName := range fileNames {
+	for i, fileName := range fileNames {
+		documentNumber := i + 1
 		file, err := os.Open(fileName)
 		if err != nil {
 			log.Fatal(err)
@@ -24,7 +25,8 @@ func readFilesAndBuildIndex(fileNames []string) InvertedIndex {
 			log.Fatal(err)
 		}
 		words := strings.Fields(strings.ToLower(string(fileContent)))
-		for wordNumber, word := range words {
+		for i, word := range words {
+			wordNumber := i + 1
 			index.Add(word, documentNumber, wordNumber)
 		}
 	}
