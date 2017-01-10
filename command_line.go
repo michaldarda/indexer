@@ -43,7 +43,7 @@ func startCommandLine(index InvertedIndex, in io.Reader, out io.Writer) {
 				currentOccurrence = result
 			}
 		} else {
-			currentWord = strings.ToLower(tokenizedCommand[0])
+			currentWord = tokenizedCommand[0]
 			if len(tokenizedCommand) == 3 {
 				documentNumber, err := strconv.Atoi(tokenizedCommand[1])
 				wordNumber, err := strconv.Atoi(tokenizedCommand[2])

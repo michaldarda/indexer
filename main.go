@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"unicode"
 )
 
 func readFilesAndBuildIndex(fileNames []string) InvertedIndex {
@@ -24,7 +25,9 @@ func readFilesAndBuildIndex(fileNames []string) InvertedIndex {
 		if err != nil {
 			log.Fatal(err)
 		}
-		words := strings.Fields(strings.ToLower(string(fileContent)))
+		words := strings.FieldsFunc(string(fileContent), func(r rune) bool {
+			return !unicode.IsLetter(r)
+		})
 		for i, word := range words {
 			wordNumber := i + 1
 			index.Add(word, documentNumber, wordNumber)
