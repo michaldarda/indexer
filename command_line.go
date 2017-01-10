@@ -4,40 +4,39 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"os"
 	"strconv"
 	"strings"
 )
 
 func startCommandLine(index InvertedIndex, in io.Reader, out io.Writer) {
+	reader := bufio.NewReader(in)
 	var currentWord string
 	var currentOccurrence WordOccurrence = WordOccurrence{documentNumber: -1, wordNumber: -1}
-	reader := bufio.NewReader(in)
 	for {
-		fmt.Fprintf(out, "> ")
+		fmt.Fprintf(out, "indexer_ $ ")
 		command, _ := reader.ReadString('\n')
 		command = strings.TrimRight(command, "\n")
 		tokenizedCommand := strings.FieldsFunc(command, func(r rune) bool {
 			return r == ' ' || r == ':'
 		})
 		if len(tokenizedCommand) != 1 && len(tokenizedCommand) != 3 {
-			fmt.Fprintf(os.Stdout, "Wrong command supplied")
+			fmt.Fprintf(out, "Wrong command supplied")
 			continue
 		}
 		if tokenizedCommand[0] == "!" {
-			os.Exit(0)
+			break
 		}
 		if (currentWord == "") && (tokenizedCommand[0] == ">" || tokenizedCommand[0] == "<") {
-			fmt.Fprintln(os.Stdout, "You must provide word to search")
+			fmt.Fprintln(out, "You must provide word to search")
 			continue
 		}
 		if command == ">" {
 			result := index.SearchForward(currentWord, currentOccurrence)
-			fmt.Fprintln(os.Stdout, currentWord, result)
+			fmt.Fprintln(out, currentWord, result)
 			currentOccurrence = result
 		} else if command == "<" {
 			result := index.SearchBackward(currentWord, currentOccurrence)
-			fmt.Fprintln(os.Stdout, currentWord, result)
+			fmt.Fprintln(out, currentWord, result)
 			currentOccurrence = result
 		} else {
 			currentWord = tokenizedCommand[0]
@@ -52,7 +51,7 @@ func startCommandLine(index InvertedIndex, in io.Reader, out io.Writer) {
 				currentOccurrence = WordOccurrence{documentNumber: -1, wordNumber: -1}
 			}
 			currentOccurrence = index.SearchForward(currentWord, currentOccurrence)
-			fmt.Fprintln(os.Stdout, currentWord, currentOccurrence)
+			fmt.Fprintln(out, currentWord, currentOccurrence)
 		}
 	}
 }

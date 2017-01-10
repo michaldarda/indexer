@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -30,14 +32,42 @@ func readFilesAndBuildIndex(fileNames []string) InvertedIndex {
 }
 
 func main() {
-	argsCount := len(os.Args)
-	if argsCount < 2 {
+	commandFileName := flag.String("c", "", "file with command script")
+	outputFileName := flag.String("o", "", "output file")
+	debug := flag.Bool("debug", false, "debug mode")
+	flag.Parse()
+
+	var in io.Reader
+	var out io.Writer
+	var err error
+
+	if *commandFileName != "" {
+		in, err = os.Open(*commandFileName)
+		if err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		in = os.Stdin
+	}
+
+	if *outputFileName != "" {
+		out, err = os.OpenFile(*outputFileName, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
+		if err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		out = os.Stdout
+	}
+
+	if len(flag.Args()) < 1 {
 		fmt.Fprintf(os.Stderr, "usage: %s [files]\n", os.Args[0])
 		os.Exit(2)
 	}
 
-	index := readFilesAndBuildIndex(os.Args[1:argsCount])
-	// index.PrettyPrint()
+	index := readFilesAndBuildIndex(flag.Args())
+	if *debug {
+		index.PrettyPrint()
+	}
 
-	startCommandLine(index, os.Stdin, os.Stdout)
+	startCommandLine(index, in, out)
 }
