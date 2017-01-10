@@ -39,5 +39,5 @@ func main() {
 	index := readFilesAndBuildIndex(os.Args[1:argsCount])
 	// index.PrettyPrint()
 
-	startCommandLine(index, os.Stdin)
+	startCommandLine(index, os.Stdin, os.Stdout)
 }
